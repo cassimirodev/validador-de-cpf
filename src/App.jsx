@@ -1,7 +1,35 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
 import './App.css';
+import { CpfStatus } from './components/CpfStatus';
+import { validarCpf } from './utils/validarcpf';
+
+
+
+
 
 function App() {
+  const [cpf, setCpf] = useState('')
+  const [status, setStatus] = useState(null) // o status começa como null 
+
+  function handlechange(e) {
+    const valorDigitado = e.target.value
+    const cpfFormatado = formatarCpf(valorDigitado)
+    setCpf(cpfFormatado)
+
+    const cpfLimpo = cpfFormatado.replace(/\D/g, '')
+    setStatus(validarCpf(cpfLimpo))
+  }
+
+  function formatarCpf(valor) {
+    const numeros = valor.replace(/\D/g, '').slice(0, 11)
+    return numeros
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+  }
+  
+
   return (
     <>
       <nav className="navbar bg-body-tertiary" data-bs-theme="dark">
@@ -33,13 +61,14 @@ function App() {
                   type="text"
                   className="form-control"
                   id="inputCpf"
-                  aria-describedby="cpfHelp"
+                  value={cpf}
+                  onChange={handlechange}
                   placeholder="Insira aqui seu CPF"
                 />
               </div>
             </form>
-            <div id="cpfStatus" className="alert alert-secondary mt-3">
-              Aqui vai o resultado da validação.
+            <div id="cpfStatus" className="alert mt-3">
+              <CpfStatus status={status} />
             </div>
           </div>
 
